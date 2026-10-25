@@ -22,7 +22,7 @@ jobs:
         run: |
           for i in $(seq 1 30); do
             node monitor.mjs || echo "revision $i fallo"
-            [ "$i" -lt 30 ] && sleep 90
+            if [ "$i" -lt 30 ]; then sleep 90; fi
           done
       - name: Guardar estado
         run: |

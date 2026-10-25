@@ -57,6 +57,13 @@ for (const win of WINDOWS) {
   if (today < win.from || today > win.to) { console.log(`${win.name}: fuera de ventana (${win.from}..${win.to})`); continue; }
   const res = await check(win);
   if (res.blind) { anyBlind = `${win.name}: ${res.blind}`; console.log('CIEGO', anyBlind); continue; }
+  if (res.hits.length) {
+    // revalida antes de avisar: la opcion debe seguir ahi en una segunda consulta
+    await new Promise(r => setTimeout(r, 3000));
+    const again = await check(win);
+    if (again.blind) { anyBlind = `${win.name}: ${again.blind}`; console.log('CIEGO en revalidacion', anyBlind); continue; }
+    res.hits = res.hits.filter(h => again.hits.some(x => x.key === h.key));
+  }
   console.log(`${win.name}: ${res.hits.length} disponibles`);
   const now = Date.now();
   const fresh = res.hits.filter(h => now - (state.seen[h.key] || 0) > 30 * 60 * 1000);

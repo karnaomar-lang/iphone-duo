@@ -1,22 +1,36 @@
 name: monitor-duo
 on:
-  schedule: [{ cron: '*/5 * * * *' }]
+  schedule: [{ cron: '*/10 * * * *' }]   # respaldo por si se corta la cadena
   workflow_dispatch:
 permissions:
   contents: write
-concurrency: monitor-duo
+  actions: write
+concurrency:
+  group: monitor-duo
+  cancel-in-progress: false
 jobs:
   check:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 58
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node monitor.mjs
+      - name: Revisar cada 90 s durante ~45 min
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          for i in $(seq 1 30); do
+            node monitor.mjs || echo "revision $i fallo"
+            [ "$i" -lt 30 ] && sleep 90
+          done
       - name: Guardar estado
         run: |
           git config user.name monitor && git config user.email monitor@users.noreply.github.com
-          git add state.json && (git diff --cached --quiet || (git commit -m "estado" && git push))
+          git add state.json && (git diff --cached --quiet || (git pull -q --rebase -X theirs && git commit -q -m "estado" && git push)) || true
+      - name: Relanzar la cadena (hasta el 20 nov)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(date -u +%Y%m%d)" -lt 20261121 ]; then gh workflow run monitor-duo --ref main; fi

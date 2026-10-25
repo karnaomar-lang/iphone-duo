@@ -11,8 +11,8 @@ const PARTS = {
 };
 
 const WINDOWS = [
-  { name: 'Orlando', zip: '32819', radius: 25, from: '2026-11-06', to: '2026-11-12' },
-  { name: 'San Diego', zip: '92101', radius: 25, from: '2026-10-25', to: '2026-11-09' },
+  { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-06', to: '2026-11-12' },
+  { name: 'San Diego', zip: '92108', stores: { R040: 'Fashion Valley', R082: 'UTC', R213: 'Otay Ranch', R294: 'Carlsbad' }, from: '2026-10-25', to: '2026-11-09' },
 ];
 
 const STATE_FILE = 'state.json';
@@ -27,24 +27,25 @@ async function notify(title, message, priority = 'urgent', click) {
 }
 
 async function check(win) {
-  const qs = new URLSearchParams({ pl: 'true', 'mts.0': 'regular', searchNearby: 'true', location: win.zip });
+  const qs = new URLSearchParams({ pl: 'true', location: win.zip });
   Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
-  const r = await fetch(`https://www.apple.com/shop/fulfillment-messages?${qs}`, {
+  const r = await fetch(`https://www.apple.com/shop/retail/pickup-message?${qs}`, {
     headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36', Accept: 'application/json', 'Accept-Language': 'en-US,en;q=0.9' },
   });
   const text = await r.text();
   let json;
   try { json = JSON.parse(text); } catch { return { blind: `HTTP ${r.status}, respuesta no JSON` }; }
-  const stores = json?.body?.content?.pickupMessage?.stores;
-  if (!Array.isArray(stores)) return { blind: 'JSON sin lista de tiendas' };
+  const stores = json?.body?.stores;
+  if (!Array.isArray(stores) || stores.length === 0) return { blind: 'JSON sin lista de tiendas' };
   const hits = [];
   for (const s of stores) {
-    const dist = parseFloat(s.storeDistanceWithUnit) || parseFloat(s.storeDistance) || 0;
-    if (dist > win.radius) continue;
+    if (!win.stores[s.storeNumber]) continue;
     for (const [part, label] of Object.entries(PARTS)) {
       const a = s.partsAvailability?.[part];
-      if (a && (a.pickupDisplay === 'available' || a.storePickEligible === true && a.pickupSearchQuote?.toLowerCase().includes('today'))) {
-        hits.push({ key: `${win.name}|${s.storeNumber}|${part}`, text: `${label} en ${s.storeName} (${win.name}, ${dist} mi)` });
+      if (!a) continue;
+      const selectable = a.messageTypes?.regular?.storeSelectionEnabled === true;
+      if (a.pickupDisplay === 'available' && selectable) {
+        hits.push({ key: `${win.name}|${s.storeNumber}|${part}`, text: `${label} en ${s.storeName} (${win.name}): ${a.pickupSearchQuote || 'disponible'}` });
       }
     }
   }

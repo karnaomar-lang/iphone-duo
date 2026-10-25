@@ -1,0 +1,76 @@
+// Monitor de disponibilidad en tienda: iPhone Duo 1TB (Night Sky / Star White, desbloqueado) en Apple.com
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+
+const TOPIC = process.env.NTFY_TOPIC;
+if (!TOPIC) throw new Error('Falta NTFY_TOPIC');
+
+const PARTS = {
+  'MK1L4LL/A': 'Night Sky 1TB',
+  'MK1J4LL/A': 'Star White 1TB',
+  ...JSON.parse(process.env.EXTRA_PARTS || '{}'),
+};
+
+const WINDOWS = [
+  { name: 'Orlando', zip: '32819', radius: 25, from: '2026-11-06', to: '2026-11-12' },
+  { name: 'San Diego', zip: '92101', radius: 25, from: '2026-10-25', to: '2026-11-09' },
+];
+
+const STATE_FILE = 'state.json';
+const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, 'utf8')) : { seen: {}, blindAlerted: false };
+const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+
+async function notify(title, message, priority = 'urgent', click) {
+  const headers = { Title: title, Priority: priority, Tags: 'iphone,rotating_light' };
+  if (click) headers.Click = click;
+  const r = await fetch(`https://ntfy.sh/${TOPIC}`, { method: 'POST', body: message, headers });
+  if (!r.ok) console.error('ntfy fallo', r.status);
+}
+
+async function check(win) {
+  const qs = new URLSearchParams({ pl: 'true', 'mts.0': 'regular', searchNearby: 'true', location: win.zip });
+  Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
+  const r = await fetch(`https://www.apple.com/shop/fulfillment-messages?${qs}`, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36', Accept: 'application/json', 'Accept-Language': 'en-US,en;q=0.9' },
+  });
+  const text = await r.text();
+  let json;
+  try { json = JSON.parse(text); } catch { return { blind: `HTTP ${r.status}, respuesta no JSON` }; }
+  const stores = json?.body?.content?.pickupMessage?.stores;
+  if (!Array.isArray(stores)) return { blind: 'JSON sin lista de tiendas' };
+  const hits = [];
+  for (const s of stores) {
+    const dist = parseFloat(s.storeDistanceWithUnit) || parseFloat(s.storeDistance) || 0;
+    if (dist > win.radius) continue;
+    for (const [part, label] of Object.entries(PARTS)) {
+      const a = s.partsAvailability?.[part];
+      if (a && (a.pickupDisplay === 'available' || a.storePickEligible === true && a.pickupSearchQuote?.toLowerCase().includes('today'))) {
+        hits.push({ key: `${win.name}|${s.storeNumber}|${part}`, text: `${label} en ${s.storeName} (${win.name}, ${dist} mi)` });
+      }
+    }
+  }
+  return { hits };
+}
+
+let anyBlind = null;
+for (const win of WINDOWS) {
+  if (today < win.from || today > win.to) { console.log(`${win.name}: fuera de ventana (${win.from}..${win.to})`); continue; }
+  const res = await check(win);
+  if (res.blind) { anyBlind = `${win.name}: ${res.blind}`; console.log('CIEGO', anyBlind); continue; }
+  console.log(`${win.name}: ${res.hits.length} disponibles`);
+  const now = Date.now();
+  const fresh = res.hits.filter(h => now - (state.seen[h.key] || 0) > 30 * 60 * 1000);
+  if (fresh.length) {
+    await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda.', 'urgent',
+      'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
+    fresh.forEach(h => (state.seen[h.key] = now));
+  }
+  // limpia los que dejaron de estar disponibles para volver a avisar si reaparecen
+  for (const k of Object.keys(state.seen)) if (k.startsWith(win.name + '|') && !res.hits.some(h => h.key === k)) delete state.seen[k];
+}
+
+if (anyBlind && !state.blindAlerted) {
+  await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nNo estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'high');
+  state.blindAlerted = true;
+} else if (!anyBlind) state.blindAlerted = false;
+
+writeFileSync(STATE_FILE, JSON.stringify(state, null, 1));

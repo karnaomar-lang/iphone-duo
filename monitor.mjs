@@ -53,10 +53,11 @@ async function check(win) {
 }
 
 let anyBlind = null;
+const summary = [];
 for (const win of WINDOWS) {
-  if (today < win.from || today > win.to) { console.log(`${win.name}: fuera de ventana (${win.from}..${win.to})`); continue; }
+  if (today < win.from || today > win.to) { console.log(`${win.name}: fuera de ventana (${win.from}..${win.to})`); summary.push(`${win.name}: aun fuera de su ventana (${win.from} a ${win.to})`); continue; }
   const res = await check(win);
-  if (res.blind) { anyBlind = `${win.name}: ${res.blind}`; console.log('CIEGO', anyBlind); continue; }
+  if (res.blind) { anyBlind = `${win.name}: ${res.blind}`; console.log('CIEGO', anyBlind); summary.push(`${win.name}: NO PUDE LEER APPLE`); continue; }
   if (res.hits.length) {
     // revalida antes de avisar: la opcion debe seguir ahi en una segunda consulta
     await new Promise(r => setTimeout(r, 3000));
@@ -65,6 +66,7 @@ for (const win of WINDOWS) {
     res.hits = res.hits.filter(h => again.hits.some(x => x.key === h.key));
   }
   console.log(`${win.name}: ${res.hits.length} disponibles`);
+  summary.push(`${win.name}: ${res.hits.length} disponibles`);
   const now = Date.now();
   const fresh = res.hits.filter(h => now - (state.seen[h.key] || 0) > 30 * 60 * 1000);
   if (fresh.length) {
@@ -80,5 +82,13 @@ if (anyBlind && !state.blindAlerted) {
   await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nNo estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'high');
   state.blindAlerted = true;
 } else if (!anyBlind) state.blindAlerted = false;
+
+// aviso diario de que el monitor sigue vivo (primer run despues de las 8:00 hora CDMX)
+const mx = new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' });
+const [mxDate, mxTime] = mx.split(' ');
+if (parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
+  await notify('Monitor Duo: sigo vigilando', summary.join('\n') + '\n(Este aviso llega 1 vez al dia. Si un dia no llega, el monitor se cayo.)', 'low');
+  state.lastHeartbeat = mxDate;
+}
 
 writeFileSync(STATE_FILE, JSON.stringify(state, null, 1));

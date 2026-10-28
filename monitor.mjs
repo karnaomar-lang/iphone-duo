@@ -29,10 +29,13 @@ async function notify(title, message, priority = 'urgent', click) {
 
 // Alerta critica via Pushover (suena aunque el telefono este en silencio y repite hasta confirmar).
 // Si faltan las claves, no hace nada: el aviso sigue saliendo por ntfy.
-async function notifyCritical(title, message, url) {
+async function notifyCritical(title, message, url, priority = 2) {
   const { PUSHOVER_TOKEN: token, PUSHOVER_USER: user } = process.env;
   if (!token || !user) return console.log('Pushover sin configurar; solo ntfy');
-  const body = new URLSearchParams({ token, user, title, message, priority: '2', retry: '60', expire: '3600', sound: 'siren', url, url_title: 'Abrir compra en Apple' });
+  const fields = { token, user, title, message, priority: String(priority) };
+  if (priority === 2) Object.assign(fields, { retry: '60', expire: '3600', sound: 'siren' });
+  if (url) Object.assign(fields, { url, url_title: 'Abrir compra en Apple' });
+  const body = new URLSearchParams(fields);
   try {
     const r = await fetch('https://api.pushover.net/1/messages.json', { method: 'POST', body });
     if (!r.ok) console.error('pushover fallo', r.status, (await r.text()).slice(0, 200));
@@ -104,6 +107,7 @@ for (const win of WINDOWS) {
 
 if (anyBlind && !state.blindAlerted) {
   await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nNo estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'high');
+  await notifyCritical('Monitor Duo: no puedo leer Apple', `${anyBlind}\nNo estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, undefined, 1);
   state.blindAlerted = true;
 } else if (!anyBlind) state.blindAlerted = false;
 

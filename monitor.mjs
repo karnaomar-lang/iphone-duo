@@ -27,6 +27,18 @@ async function notify(title, message, priority = 'urgent', click) {
   if (!r.ok) console.error('ntfy fallo', r.status);
 }
 
+// Alerta critica via Pushover (suena aunque el telefono este en silencio y repite hasta confirmar).
+// Si faltan las claves, no hace nada: el aviso sigue saliendo por ntfy.
+async function notifyCritical(title, message, url) {
+  const { PUSHOVER_TOKEN: token, PUSHOVER_USER: user } = process.env;
+  if (!token || !user) return console.log('Pushover sin configurar; solo ntfy');
+  const body = new URLSearchParams({ token, user, title, message, priority: '2', retry: '60', expire: '3600', sound: 'siren', url, url_title: 'Abrir compra en Apple' });
+  try {
+    const r = await fetch('https://api.pushover.net/1/messages.json', { method: 'POST', body });
+    if (!r.ok) console.error('pushover fallo', r.status, (await r.text()).slice(0, 200));
+  } catch (e) { console.error('pushover error', e.message); }
+}
+
 async function check(win) {
   const qs = new URLSearchParams({ pl: 'true', location: win.zip });
   Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
@@ -83,6 +95,7 @@ for (const win of WINDOWS) {
   if (fresh.length) {
     await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda. En el checkout confirma que la fecha de recogida te sirva para el 13 de nov.', 'urgent',
       'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
+    await notifyCritical(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\nCompra YA. Confirma fecha de recogida (13 nov).', 'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
     fresh.forEach(h => (state.seen[h.key] = now));
   }
   // limpia los que dejaron de estar disponibles para volver a avisar si reaparecen

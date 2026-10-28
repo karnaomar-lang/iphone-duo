@@ -19,6 +19,8 @@ jobs:
       - name: Revisar cada 90 s durante ~45 min
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: |
           for i in $(seq 1 30); do
             node monitor.mjs || echo "revision $i fallo"

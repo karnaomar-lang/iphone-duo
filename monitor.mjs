@@ -30,12 +30,22 @@ async function notify(title, message, priority = 'urgent', click) {
 async function check(win) {
   const qs = new URLSearchParams({ pl: 'true', location: win.zip });
   Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
-  const r = await fetch(`https://www.apple.com/shop/retail/pickup-message?${qs}`, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36', Accept: 'application/json', 'Accept-Language': 'en-US,en;q=0.9' },
-  });
-  const text = await r.text();
-  let json;
-  try { json = JSON.parse(text); } catch { return { blind: `HTTP ${r.status}, respuesta no JSON` }; }
+  // reintenta errores pasajeros (503, etc.) antes de darse por ciego
+  let r, json;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      r = await fetch(`https://www.apple.com/shop/retail/pickup-message?${qs}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36', Accept: 'application/json', 'Accept-Language': 'en-US,en;q=0.9' },
+        signal: AbortSignal.timeout(20000),
+      });
+      json = JSON.parse(await r.text());
+      break;
+    } catch {
+      json = undefined;
+      if (attempt < 3) await new Promise(res => setTimeout(res, 5000 * attempt));
+    }
+  }
+  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON (3 intentos)` };
   const stores = json?.body?.stores;
   if (!Array.isArray(stores) || stores.length === 0) return { blind: 'JSON sin lista de tiendas' };
   const hits = [];

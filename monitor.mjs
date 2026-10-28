@@ -11,9 +11,10 @@ const PARTS = {
 };
 
 const WINDOWS = [
+  // Solo Orlando. Se compra del 6 al 12 de nov para recoger el 13 de nov.
   { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-06', to: '2026-11-12' },
-  { name: 'San Diego', zip: '92108', stores: { R040: 'Fashion Valley', R082: 'UTC', R213: 'Otay Ranch', R294: 'Carlsbad' }, from: '2026-10-25', to: '2026-11-09' },
 ];
+const NOTIFICATIONS_FROM = '2026-11-06'; // antes de esta fecha el monitor no manda ningun aviso (ni el diario)
 
 const STATE_FILE = 'state.json';
 const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, 'utf8')) : { seen: {}, blindAlerted: false };
@@ -70,7 +71,7 @@ for (const win of WINDOWS) {
   const now = Date.now();
   const fresh = res.hits.filter(h => now - (state.seen[h.key] || 0) > 30 * 60 * 1000);
   if (fresh.length) {
-    await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda.', 'urgent',
+    await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda. En el checkout confirma que la fecha de recogida te sirva para el 13 de nov.', 'urgent',
       'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
     fresh.forEach(h => (state.seen[h.key] = now));
   }
@@ -86,7 +87,7 @@ if (anyBlind && !state.blindAlerted) {
 // aviso diario de que el monitor sigue vivo (primer run despues de las 8:00 hora CDMX)
 const mx = new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' });
 const [mxDate, mxTime] = mx.split(' ');
-if (parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
+if (mxDate >= NOTIFICATIONS_FROM && parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
   await notify('Monitor Duo: sigo vigilando', summary.join('\n') + '\n(Este aviso llega 1 vez al dia. Si un dia no llega, el monitor se cayo.)', 'low');
   state.lastHeartbeat = mxDate;
 }

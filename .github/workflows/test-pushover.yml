@@ -10,5 +10,6 @@ jobs:
         with: { node-version: 22 }
       - run: node test-pushover.mjs
         env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}

@@ -11,7 +11,8 @@ const PARTS = {
 };
 
 const WINDOWS = [
-  // Solo Orlando. Se compra del 6 al 12 de nov para recoger el 13 de nov.
+  // San Diego hasta el 1 de nov; Orlando del 6 al 12 de nov (recoger el 13 de nov).
+  { name: 'San Diego', zip: '92108', stores: { R040: 'Fashion Valley', R082: 'UTC', R213: 'Otay Ranch', R294: 'Carlsbad' }, from: '2026-10-28', to: '2026-11-01' },
   { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-06', to: '2026-11-12' },
 ];
 const NOTIFICATIONS_FROM = '2026-11-06'; // antes de esta fecha el monitor no manda ningun aviso (ni el diario)
@@ -96,9 +97,9 @@ for (const win of WINDOWS) {
   const now = Date.now();
   const fresh = res.hits.filter(h => now - (state.seen[h.key] || 0) > 30 * 60 * 1000);
   if (fresh.length) {
-    await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda. En el checkout confirma que la fecha de recogida te sirva para el 13 de nov.', 'urgent',
+    await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda. En el checkout confirma la fecha de recogida.', 'urgent',
       'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
-    await notifyCritical(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\nCompra YA. Confirma fecha de recogida (13 nov).', 'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
+    await notifyCritical(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\nCompra YA. Confirma la fecha de recogida.', 'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
     fresh.forEach(h => (state.seen[h.key] = now));
   }
   // limpia los que dejaron de estar disponibles para volver a avisar si reaparecen

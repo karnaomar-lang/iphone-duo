@@ -15,7 +15,6 @@ const WINDOWS = [
   { name: 'San Diego', zip: '92108', stores: { R040: 'Fashion Valley', R082: 'UTC', R213: 'Otay Ranch', R294: 'Carlsbad' }, from: '2026-10-28', to: '2026-11-01' },
   { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-06', to: '2026-11-12' },
 ];
-const NOTIFICATIONS_FROM = '2026-11-06'; // antes de esta fecha el monitor no manda ningun aviso (ni el diario)
 
 const STATE_FILE = 'state.json';
 const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, 'utf8')) : { seen: {}, blindAlerted: false };
@@ -115,7 +114,7 @@ if (anyBlind && !state.blindAlerted) {
 // aviso diario de que el monitor sigue vivo (primer run despues de las 8:00 hora CDMX)
 const mx = new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' });
 const [mxDate, mxTime] = mx.split(' ');
-if (mxDate >= NOTIFICATIONS_FROM && parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
+if (parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
   await notify('Monitor Duo: sigo vigilando', summary.join('\n') + '\n(Este aviso llega 1 vez al dia. Si un dia no llega, el monitor se cayo.)', 'low');
   state.lastHeartbeat = mxDate;
 }

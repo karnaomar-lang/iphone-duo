@@ -49,7 +49,7 @@ async function check(win) {
   Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
   // reintenta errores pasajeros (503, 541, etc.) con esperas crecientes antes de darse por ciego
   const waits = [4000, 10000, 20000];
-  let r, json;
+  let r, json, body = '';
   for (let attempt = 0; attempt <= waits.length; attempt++) {
     try {
       r = await fetch(`https://www.apple.com/shop/retail/pickup-message?${qs}`, {
@@ -60,14 +60,15 @@ async function check(win) {
         },
         signal: AbortSignal.timeout(20000),
       });
-      json = JSON.parse(await r.text());
+      body = await r.text();
+      json = JSON.parse(body);
       break;
     } catch {
       json = undefined;
       if (attempt < waits.length) await new Promise(res => setTimeout(res, waits[attempt]));
     }
   }
-  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON (${waits.length + 1} intentos)` };
+  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON (${waits.length + 1} intentos): ${body.slice(0, 150).replace(/\s+/g, ' ')}` };
   const stores = json?.body?.stores;
   if (!Array.isArray(stores) || stores.length === 0) return { blind: 'JSON sin lista de tiendas' };
   const hits = [];
@@ -133,3 +134,10 @@ if (parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
 }
 
 writeFileSync(STATE_FILE, JSON.stringify(state, null, 1));
+
+// Si Apple bloquea la IP de este servidor de GitHub, terminar la vuelta para que la cadena se relance en otro servidor (otra IP).
+// Solo entre 90 s y 30 min de fallo seguido; mas alla se queda y sigue reintentando.
+if (anyBlind && state.blindSince) {
+  const blindFor = Date.now() - state.blindSince;
+  if (blindFor >= 90 * 1000 && blindFor < 30 * 60 * 1000) { console.log('Apple bloquea esta IP: cierro la vuelta para relanzar en otro servidor'); process.exit(75); }
+}

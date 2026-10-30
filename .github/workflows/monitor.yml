@@ -25,7 +25,9 @@ jobs:
           n=0
           while [ "$SECONDS" -lt 2700 ]; do
             n=$((n+1))
-            node monitor.mjs || echo "revision $n fallo"
+            node monitor.mjs && rc=0 || rc=$?
+            if [ "$rc" -eq 75 ]; then echo "relanzando en otro servidor"; break; fi
+            if [ "$rc" -ne 0 ]; then echo "revision $n fallo"; fi
             sleep 20
           done
       - name: Guardar estado

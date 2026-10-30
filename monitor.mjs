@@ -47,22 +47,27 @@ async function notifyCritical(title, message, url, priority = 2) {
 async function check(win) {
   const qs = new URLSearchParams({ pl: 'true', location: win.zip });
   Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
-  // reintenta errores pasajeros (503, etc.) antes de darse por ciego
+  // reintenta errores pasajeros (503, 541, etc.) con esperas crecientes antes de darse por ciego
+  const waits = [4000, 10000, 20000];
   let r, json;
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 0; attempt <= waits.length; attempt++) {
     try {
       r = await fetch(`https://www.apple.com/shop/retail/pickup-message?${qs}`, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/130 Safari/537.36', Accept: 'application/json', 'Accept-Language': 'en-US,en;q=0.9' },
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36',
+          Accept: 'application/json, text/javascript, */*; q=0.01', 'Accept-Language': 'en-US,en;q=0.9',
+          Referer: 'https://www.apple.com/shop/buy-iphone', 'X-Requested-With': 'XMLHttpRequest',
+        },
         signal: AbortSignal.timeout(20000),
       });
       json = JSON.parse(await r.text());
       break;
     } catch {
       json = undefined;
-      if (attempt < 3) await new Promise(res => setTimeout(res, 5000 * attempt));
+      if (attempt < waits.length) await new Promise(res => setTimeout(res, waits[attempt]));
     }
   }
-  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON (3 intentos)` };
+  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON (${waits.length + 1} intentos)` };
   const stores = json?.body?.stores;
   if (!Array.isArray(stores) || stores.length === 0) return { blind: 'JSON sin lista de tiendas' };
   const hits = [];
@@ -107,11 +112,17 @@ for (const win of WINDOWS) {
   for (const k of Object.keys(state.seen)) if (k.startsWith(win.name + '|') && !res.hits.some(h => h.key === k)) delete state.seen[k];
 }
 
-if (anyBlind && !state.blindAlerted) {
-  await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nNo estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'high');
-  await notifyCritical('Monitor Duo: no puedo leer Apple', `${anyBlind}\nNo estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, undefined, 1);
+// Un fallo suelto de Apple (541, 503...) no avisa: solo si dura 3 min seguidos. Todo fallo queda en state.blindLog.
+const nowMs = Date.now();
+if (anyBlind) {
+  state.blindSince ??= nowMs;
+  state.blindLog = [...(state.blindLog || []), `${new Date(nowMs).toISOString()} ${anyBlind}`].slice(-20);
+}
+if (anyBlind && !state.blindAlerted && nowMs - state.blindSince >= 3 * 60 * 1000) {
+  await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nLlevo 3 min sin poder leer. No estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'high');
+  await notifyCritical('Monitor Duo: no puedo leer Apple', `${anyBlind}\nLlevo 3 min sin poder leer. No estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, undefined, 1);
   state.blindAlerted = true;
-} else if (!anyBlind) state.blindAlerted = false;
+} else if (!anyBlind) { state.blindSince = null; state.blindAlerted = false; }
 
 // aviso diario de que el monitor sigue vivo (primer run despues de las 8:00 hora CDMX)
 const mx = new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' });

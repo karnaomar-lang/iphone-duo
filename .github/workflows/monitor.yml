@@ -22,9 +22,9 @@ jobs:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: |
-          for i in $(seq 1 30); do
+          for i in $(seq 1 55); do
             node monitor.mjs || echo "revision $i fallo"
-            if [ "$i" -lt 30 ]; then sleep 90; fi
+            if [ "$i" -lt 55 ]; then sleep 45; fi
           done
       - name: Guardar estado
         run: |

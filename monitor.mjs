@@ -13,8 +13,8 @@ const PARTS = {
 };
 
 const WINDOWS = [
-  // San Diego hasta el 1 de nov; Orlando del 6 al 12 de nov (recoger el 13 de nov).
-  { name: 'San Diego', zip: '92108', stores: { R040: 'Fashion Valley', R082: 'UTC', R213: 'Otay Ranch', R294: 'Carlsbad' }, from: '2026-10-28', to: '2026-11-01' },
+  // San Diego hasta el 10 de nov; Orlando del 6 al 12 de nov (recoger el 13 de nov).
+  { name: 'San Diego', zip: '92108', stores: { R040: 'Fashion Valley', R082: 'UTC', R213: 'Otay Ranch', R294: 'Carlsbad' }, from: '2026-10-28', to: '2026-11-10' },
   { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-06', to: '2026-11-12' },
 ];
 

@@ -18,7 +18,7 @@ const WINDOWS = [
   { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-19' },
 ];
 
-const STATE_FILE = 'state.json';
+const STATE_FILE = process.env.STATE_FILE || 'state.json';
 const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, 'utf8')) : { seen: {}, blindAlerted: false };
 const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 

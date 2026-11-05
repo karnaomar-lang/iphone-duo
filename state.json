@@ -2,11 +2,8 @@
  "seen": {},
  "blindAlerted": false,
  "lastHeartbeat": "2026-11-05",
- "blindSince": 1793899643456,
+ "blindSince": 1793900781330,
  "blindLog": [
-  "2026-11-05T14:38:42.767Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-05T14:39:37.819Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-05T14:40:32.889Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-05T15:02:16.592Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-05T15:03:11.307Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-05T15:04:05.947Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
@@ -23,6 +20,9 @@
   "2026-11-05T17:06:15.476Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-05T17:27:23.456Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-05T17:28:18.314Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-05T17:29:13.020Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa"
+  "2026-11-05T17:29:13.020Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-05T17:46:21.330Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-05T17:47:16.475Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-05T17:48:11.325Z San Diego: HTTP 541, respuesta no JSON (4 intentos): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa"
  ]
 }

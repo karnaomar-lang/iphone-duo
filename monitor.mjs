@@ -13,9 +13,9 @@ const PARTS = {
 };
 
 const WINDOWS = [
-  // San Diego hasta el 10 de nov; Orlando del 5 al 19 de nov.
+  // San Diego hasta el 10 de nov; Orlando del 5 al 13 de nov.
   { name: 'San Diego', zip: '92108', stores: { R040: 'Fashion Valley', R082: 'UTC', R213: 'Otay Ranch' }, from: '2026-10-28', to: '2026-11-10' },
-  { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-19' },
+  { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-13' },
 ];
 
 const STATE_FILE = process.env.STATE_FILE || 'state.json';
@@ -48,7 +48,9 @@ async function check(win) {
   const qs = new URLSearchParams({ pl: 'true', location: win.zip });
   Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
   // reintenta errores pasajeros (503, 541, etc.) con esperas crecientes antes de darse por ciego
-  const waits = [4000, 10000, 20000];
+  // Un 541/403/429 repetido suele ser bloqueo de la IP del servidor: insistir no ayuda y empeora el bloqueo, asi que se corta pronto
+  // y se deja que la cadena se relance en otro servidor (otra IP) con exit 75.
+  let waits = [4000, 10000, 20000];
   let r, json, body = '';
   for (let attempt = 0; attempt <= waits.length; attempt++) {
     try {
@@ -65,10 +67,11 @@ async function check(win) {
       break;
     } catch {
       json = undefined;
+      if ([403, 429, 541].includes(r?.status) && attempt >= 1) { waits = waits.slice(0, attempt); break; }
       if (attempt < waits.length) await new Promise(res => setTimeout(res, waits[attempt]));
     }
   }
-  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON (${waits.length + 1} intentos): ${body.slice(0, 150).replace(/\s+/g, ' ')}` };
+  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON${[403, 429, 541].includes(r?.status) ? ' (probable bloqueo de IP de GitHub)' : ''}: ${body.slice(0, 150).replace(/\s+/g, ' ')}` };
   const stores = json?.body?.stores;
   if (!Array.isArray(stores) || stores.length === 0) return { blind: 'JSON sin lista de tiendas' };
   const hits = [];

@@ -39,9 +39,9 @@ jobs:
             git pull -q --rebase -X theirs
             git push
           fi
-      - name: Relanzar la cadena (hasta el 20 nov)
+      - name: Relanzar la cadena (hasta el 13 nov)
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "$(date -u +%Y%m%d)" -lt 20261121 ]; then gh workflow run monitor-duo --ref main; fi
+          if [ "$(date -u +%Y%m%d)" -lt 20261114 ]; then gh workflow run monitor-duo --ref main; fi

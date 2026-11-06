@@ -122,9 +122,11 @@ if (anyBlind) {
   state.blindSince ??= nowMs;
   state.blindLog = [...(state.blindLog || []), `${new Date(nowMs).toISOString()} ${anyBlind}`].slice(-20);
 }
-if (anyBlind && !state.blindAlerted && nowMs - state.blindSince >= 3 * 60 * 1000) {
-  await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nLlevo 3 min sin poder leer. No estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'high');
-  await notifyCritical('Monitor Duo: no puedo leer Apple', `${anyBlind}\nLlevo 3 min sin poder leer. No estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, undefined, 1);
+// El aviso de "no puedo leer" va solo por ntfy (nunca Pushover, para no asustar) y solo de dia (8:00 a 22:00 CDMX).
+// Si ya paso el umbral de 3 min pero es de noche, no se marca como avisado: sale en cuanto amanece si sigue ciego.
+const mxHour = parseInt(new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' }).split(' ')[1].slice(0, 2), 10);
+if (anyBlind && !state.blindAlerted && nowMs - state.blindSince >= 3 * 60 * 1000 && mxHour >= 8 && mxHour < 22) {
+  await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nLlevo 3 min sin poder leer. No estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'default');
   state.blindAlerted = true;
 } else if (!anyBlind) { state.blindSince = null; state.blindAlerted = false; }
 

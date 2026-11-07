@@ -2,13 +2,8 @@
  "seen": {},
  "blindAlerted": false,
  "lastHeartbeat": "2026-11-06",
- "blindSince": 1794039812502,
+ "blindSince": 1794040577286,
  "blindLog": [
-  "2026-11-07T07:46:48.706Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-07T07:47:17.618Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-07T07:47:46.634Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-07T07:48:15.589Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-07T07:48:44.683Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-07T07:58:43.385Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-07T07:59:14.005Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-07T07:59:43.325Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
@@ -23,6 +18,11 @@
   "2026-11-07T08:24:01.027Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-07T08:24:30.205Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
   "2026-11-07T08:24:59.064Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
-  "2026-11-07T08:25:27.829Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa"
+  "2026-11-07T08:25:27.829Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-07T08:36:17.286Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-07T08:36:46.058Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-07T08:37:14.900Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-07T08:37:43.846Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa",
+  "2026-11-07T08:38:12.581Z Orlando: HTTP 541, respuesta no JSON (probable bloqueo de IP de GitHub): <!doctype html> <html class=\"en-us amr nojs en seg-consumer us\" lang=en-US> <head> <meta name=viewport content=\"width=1024,initial-scale=1\"> <title>Pa"
  ]
 }

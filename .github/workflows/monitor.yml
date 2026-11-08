@@ -28,7 +28,8 @@ jobs:
             node monitor.mjs && rc=0 || rc=$?
             if [ "$rc" -eq 75 ]; then echo "relanzando en otro servidor"; break; fi
             if [ "$rc" -ne 0 ]; then echo "revision $n fallo"; fi
-            sleep 45
+            # alinea al reloj: A revisa en los segundos 0,45,90... y B en 22,67,...; juntas cubren cada ~22 s sin pasar de 1 peticion/45 s por IP
+            sleep $(( (0 - $(date +%s) % 45 + 45) % 45 ))
           done
       - name: Guardar estado
         run: |

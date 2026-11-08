@@ -28,7 +28,7 @@ jobs:
             node monitor.mjs && rc=0 || rc=$?
             if [ "$rc" -eq 75 ]; then echo "relanzando en otro servidor"; break; fi
             if [ "$rc" -ne 0 ]; then echo "revision $n fallo"; fi
-            sleep 20
+            sleep 45
           done
       - name: Guardar estado
         run: |

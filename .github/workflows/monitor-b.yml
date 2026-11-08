@@ -48,4 +48,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "$(date -u +%Y%m%d)" -lt 20261114 ]; then gh workflow run monitor-duo-b.yml --ref main; fi
+          if [ "$(date -u +%Y%m%d)" -lt 20261114 ]; then gh workflow run monitor-b.yml --ref main; fi

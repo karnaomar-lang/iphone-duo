@@ -14,7 +14,7 @@ const PARTS = {
 
 const WINDOWS = [
   // Solo Orlando, del 5 al 13 de nov.
-  { name: 'Orlando', zip: '32809', stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-13' },
+  { name: 'Orlando', zips: ['32809', '32819', '32801'], stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-13' },
 ];
 
 const STATE_FILE = process.env.STATE_FILE || 'state.json';
@@ -43,8 +43,8 @@ async function notifyCritical(title, message, url, priority = 2) {
   } catch (e) { console.error('pushover error', e.message); }
 }
 
-async function check(win) {
-  const qs = new URLSearchParams({ pl: 'true', location: win.zip });
+async function checkZip(win, zip) {
+  const qs = new URLSearchParams({ pl: 'true', location: zip });
   Object.keys(PARTS).forEach((p, i) => qs.set(`parts.${i}`, p));
   // reintenta errores pasajeros (503, 541, etc.) con esperas crecientes antes de darse por ciego
   // Un 541/403/429 repetido suele ser bloqueo de la IP del servidor: insistir no ayuda y empeora el bloqueo, asi que se corta pronto
@@ -70,7 +70,11 @@ async function check(win) {
       if (attempt < waits.length) await new Promise(res => setTimeout(res, waits[attempt]));
     }
   }
-  if (!json) return { blind: `HTTP ${r?.status ?? 'sin respuesta'}, respuesta no JSON${[403, 429, 541].includes(r?.status) ? ' (probable bloqueo de IP de GitHub)' : ''}: ${body.slice(0, 150).replace(/\s+/g, ' ')}` };
+  if (!json) {
+    const title = (body.match(/<title>([^<]*)/i)?.[1] || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+    const h = r?.headers; const hdr = h ? ['server', 'content-type', 'retry-after', 'x-apple-request-uuid'].map(k => h.get(k) && `${k}=${h.get(k)}`).filter(Boolean).join(' ') : '';
+    return { blind: `zip ${zip}: HTTP ${r?.status ?? 'sin respuesta'}, no JSON. titulo="${title}" ${hdr} len=${body.length}` };
+  }
   const stores = json?.body?.stores;
   if (!Array.isArray(stores) || stores.length === 0) return { blind: 'JSON sin lista de tiendas' };
   const hits = [];
@@ -86,6 +90,18 @@ async function check(win) {
     }
   }
   return { hits };
+}
+
+// Prueba los codigos postales de la ventana en orden; solo es ciego si todos fallan.
+// (Otro ZIP valido de la misma ciudad devuelve las mismas tiendas cercanas; sirve para saber si el fallo depende de la consulta.)
+async function check(win) {
+  const fails = [];
+  for (const zip of win.zips) {
+    const res = await checkZip(win, zip);
+    if (!res.blind) { if (fails.length) console.log(`${win.name}: fallo con ${fails.length} zip(s) antes de funcionar con ${zip}`); return res; }
+    fails.push(res.blind); console.log('CIEGO', win.name, res.blind);
+  }
+  return { blind: fails.join(' | ') };
 }
 
 let anyBlind = null;

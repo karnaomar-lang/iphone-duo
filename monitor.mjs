@@ -14,9 +14,11 @@ const PARTS = {
 
 const WINDOWS = [
   // Solo Orlando, del 5 al 13 de nov.
-  { name: 'Orlando', zips: ['32809', '32819', '32801'], stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-13' },
+  { name: 'Orlando', zips: ['32809'], stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-13' },
 ];
 
+// Instancia de respaldo (BACKUP=1): solo avisa cuando encuentra un iPhone; sin aviso diario ni de 'no puedo leer' para no duplicar.
+const BACKUP = process.env.BACKUP === '1';
 const STATE_FILE = process.env.STATE_FILE || 'state.json';
 const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, 'utf8')) : { seen: {}, blindAlerted: false };
 const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
@@ -140,7 +142,7 @@ if (anyBlind) {
 // El aviso de "no puedo leer" va solo por ntfy (nunca Pushover, para no asustar) y solo de dia (8:00 a 22:00 CDMX).
 // Si ya paso el umbral de 3 min pero es de noche, no se marca como avisado: sale en cuanto amanece si sigue ciego.
 const mxHour = parseInt(new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' }).split(' ')[1].slice(0, 2), 10);
-if (anyBlind && !state.blindAlerted && nowMs - state.blindSince >= 3 * 60 * 1000 && mxHour >= 8 && mxHour < 22) {
+if (!BACKUP && anyBlind && !state.blindAlerted && nowMs - state.blindSince >= 3 * 60 * 1000 && mxHour >= 8 && mxHour < 22) {
   await notify('Monitor Duo: no puedo leer Apple', `${anyBlind}\nLlevo 3 min sin poder leer. No estoy vigilando hasta que se arregle. Revisa tu mismo en apple.com.`, 'default');
   state.blindAlerted = true;
 } else if (!anyBlind) { state.blindSince = null; state.blindAlerted = false; }
@@ -148,7 +150,7 @@ if (anyBlind && !state.blindAlerted && nowMs - state.blindSince >= 3 * 60 * 1000
 // aviso diario de que el monitor sigue vivo (primer run despues de las 8:00 hora CDMX)
 const mx = new Date().toLocaleString('sv-SE', { timeZone: 'America/Mexico_City' });
 const [mxDate, mxTime] = mx.split(' ');
-if (parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
+if (!BACKUP && parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
   await notify('Monitor Duo: sigo vigilando', summary.join('\n') + '\n(Este aviso llega 1 vez al dia. Si un dia no llega, el monitor se cayo.)', 'low');
   state.lastHeartbeat = mxDate;
 }

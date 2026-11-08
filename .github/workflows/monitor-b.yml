@@ -1,0 +1,51 @@
+name: monitor-duo-b
+on:
+  schedule: [{ cron: '5-59/10 * * * *' }]   # respaldo de la instancia B (desfasada 5 min de A)
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: write
+concurrency:
+  group: monitor-duo-b
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 58
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - name: Revisar (respaldo B) durante ~45 min
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
+          PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
+          BACKUP: '1'
+          STATE_FILE: state-b.json
+        run: |
+          n=0
+          while [ "$SECONDS" -lt 2700 ]; do
+            n=$((n+1))
+            node monitor.mjs && rc=0 || rc=$?
+            if [ "$rc" -eq 75 ]; then echo "relanzando en otro servidor"; break; fi
+            if [ "$rc" -ne 0 ]; then echo "revision $n fallo"; fi
+            sleep 45
+          done
+      - name: Guardar estado
+        run: |
+          git config user.name monitor && git config user.email monitor@users.noreply.github.com
+          [ -f state-b.json ] && git add state-b.json
+          if ! git diff --cached --quiet; then
+            git commit -q -m "estado"
+            for i in 1 2 3 4 5; do
+              git pull -q --rebase -X theirs && git push -q && break
+              sleep $((RANDOM % 5 + 2))
+            done
+          fi
+      - name: Relanzar la cadena (hasta el 13 nov)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$(date -u +%Y%m%d)" -lt 20261114 ]; then gh workflow run monitor-duo-b.yml --ref main; fi

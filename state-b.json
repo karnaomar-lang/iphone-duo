@@ -1,5 +1,9 @@
 {
  "seen": {},
  "blindAlerted": false,
- "blindSince": null
+ "blindSince": 1794169484298,
+ "blindLog": [
+  "2026-11-08T20:24:44.298Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-08T20:25:34.070Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974"
+ ]
 }

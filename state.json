@@ -2,12 +2,8 @@
  "seen": {},
  "blindAlerted": false,
  "lastHeartbeat": "2026-11-08",
- "blindSince": 1794184744958,
+ "blindSince": 1794186590423,
  "blindLog": [
-  "2026-11-08T22:21:49.469Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-08T22:22:34.915Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-08T22:23:20.352Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-08T22:45:49.828Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-08T22:46:35.538Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-08T22:47:19.824Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-08T22:48:05.360Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
@@ -23,6 +19,10 @@
   "2026-11-09T00:07:34.492Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-09T00:39:04.958Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-09T00:39:49.456Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-09T00:40:35.074Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974"
+  "2026-11-09T00:40:35.074Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-09T01:09:50.423Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-09T01:10:34.782Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-09T01:11:20.305Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-09T01:12:04.508Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974"
  ]
 }

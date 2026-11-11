@@ -1,4 +1,4 @@
-// Monitor de disponibilidad en tienda: iPhone Duo 1TB y 512GB (Night Sky / Star White, desbloqueado) en Apple.com
+// Monitor de disponibilidad en tienda: iPhone Duo: Night Sky 1TB, Star White 1TB y Night Sky 512GB (desbloqueado) en Apple.com
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 const TOPIC = process.env.NTFY_TOPIC;
@@ -8,7 +8,6 @@ const PARTS = {
   'MK1L4LL/A': 'Night Sky 1TB',
   'MK1J4LL/A': 'Star White 1TB',
   'MK1H4LL/A': 'Night Sky 512GB',
-  'MK1G4LL/A': 'Star White 512GB',
   ...JSON.parse(process.env.EXTRA_PARTS || '{}'),
 };
 

@@ -87,7 +87,7 @@ async function checkZip(win, zip) {
       if (!a) continue;
       const selectable = a.messageTypes?.regular?.storeSelectionEnabled === true;
       if (a.pickupDisplay === 'available' && selectable) {
-        hits.push({ key: `${win.name}|${s.storeNumber}|${part}`, text: `${label} en ${s.storeName} (${win.name}): ${a.pickupSearchQuote || 'disponible'}` });
+        hits.push({ key: `${win.name}|${s.storeNumber}|${part}`, text: `${label} en ${s.storeName} (${win.name}): ${a.pickupSearchQuote || 'disponible'}`, detail: { store: s.storeName, part, label, pickupDisplay: a.pickupDisplay, quote: a.pickupSearchQuote, regular: a.messageTypes?.regular, buyability: a.buyability } });
       }
     }
   }
@@ -120,6 +120,8 @@ for (const win of WINDOWS) {
     res.hits = res.hits.filter(h => again.hits.some(x => x.key === h.key));
   }
   console.log(`${win.name}: ${res.hits.length} disponibles`);
+  // detalle de cada disponibilidad (para poder comparar despues con lo que se ve en apple.com)
+  for (const h of res.hits) { console.log('DETALLE', JSON.stringify(h.detail)); state.hitLog = [...(state.hitLog || []), `${new Date().toISOString()} ${JSON.stringify(h.detail)}`].slice(-30); }
   summary.push(`${win.name}: ${res.hits.length} disponibles`);
   const now = Date.now();
   const fresh = res.hits.filter(h => now - (state.seen[h.key] || 0) > 30 * 60 * 1000);

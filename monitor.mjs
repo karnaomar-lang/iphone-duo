@@ -86,7 +86,7 @@ async function checkZip(win, zip) {
       if (!a) continue;
       const selectable = a.messageTypes?.regular?.storeSelectionEnabled === true;
       if (a.pickupDisplay === 'available' && selectable) {
-        hits.push({ key: `${win.name}|${s.storeNumber}|${part}`, text: `${label} en ${s.storeName} (${win.name}): ${a.pickupSearchQuote || 'disponible'}`, detail: { store: s.storeName, part, label, pickupDisplay: a.pickupDisplay, quote: a.pickupSearchQuote, regular: a.messageTypes?.regular, buyability: a.buyability } });
+        hits.push({ key: `${win.name}|${s.storeNumber}|${part}`, text: `${label} en ${s.storeName} (${win.name}): ${a.pickupSearchQuote || 'disponible'}`, detail: { store: s.storeName, part, label, pickupDisplay: a.pickupDisplay, quote: a.pickupSearchQuote, regular: a.messageTypes?.regular, buyability: a.buyability }, raw: a });
       }
     }
   }
@@ -128,6 +128,8 @@ for (const win of WINDOWS) {
     await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda. En el checkout confirma la fecha de recogida.', 'urgent',
       'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
     await notifyCritical(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\nCompra YA. Confirma la fecha de recogida.', 'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
+    // respuesta completa de Apple de cada aviso, para comparar despues con lo que se ve al entrar a comprar
+    for (const h of fresh) { console.log('RAW', h.key, JSON.stringify(h.raw)); state.hitRaw = [...(state.hitRaw || []), `${new Date().toISOString()} ${h.key} ${JSON.stringify(h.raw)}`].slice(-8); }
     fresh.forEach(h => (state.seen[h.key] = now));
   }
   // limpia los que dejaron de estar disponibles para volver a avisar si reaparecen

@@ -22,6 +22,8 @@ jobs:
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}
           PUSHOVER_USER: ${{ secrets.PUSHOVER_USER }}
         run: |
+          # fuera de la ventana (despues del 19 nov en Orlando) no hay nada que revisar: no gastar minutos
+          if [ "$(date -u +%Y%m%d)" -ge 20261121 ]; then echo 'ventana terminada'; exit 0; fi
           n=0
           while [ "$SECONDS" -lt 2700 ]; do
             n=$((n+1))
@@ -42,9 +44,9 @@ jobs:
               sleep $((RANDOM % 5 + 2))
             done
           fi
-      - name: Relanzar la cadena (hasta el 13 nov)
+      - name: Relanzar la cadena (hasta el 19 nov)
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "$(date -u +%Y%m%d)" -lt 20261114 ]; then gh workflow run monitor-duo --ref main; fi
+          if [ "$(date -u +%Y%m%d)" -lt 20261121 ]; then gh workflow run monitor-duo --ref main; fi

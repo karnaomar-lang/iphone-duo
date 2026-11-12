@@ -1,4 +1,4 @@
-// Monitor de disponibilidad en tienda: iPhone Duo: Night Sky 1TB, Star White 1TB y Night Sky 512GB (desbloqueado) en Apple.com
+// Monitor de disponibilidad en tienda: iPhone Duo: Night Sky 1TB, Star White 1TB, Night Sky 512GB y Star White 512GB (desbloqueado) en Apple.com
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 
 const TOPIC = process.env.NTFY_TOPIC;
@@ -8,12 +8,13 @@ const PARTS = {
   'MK1L4LL/A': 'Night Sky 1TB',
   'MK1J4LL/A': 'Star White 1TB',
   'MK1H4LL/A': 'Night Sky 512GB',
+  'MK1G4LL/A': 'Star White 512GB',
   ...JSON.parse(process.env.EXTRA_PARTS || '{}'),
 };
 
 const WINDOWS = [
-  // Solo Orlando, del 5 al 13 de nov.
-  { name: 'Orlando', zips: ['32809'], stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-13' },
+  // Solo Orlando, del 5 al 19 de nov.
+  { name: 'Orlando', zips: ['32809'], stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-19' },
 ];
 
 // Instancia de respaldo (BACKUP=1): solo avisa cuando encuentra un iPhone; sin aviso diario ni de 'no puedo leer' para no duplicar.

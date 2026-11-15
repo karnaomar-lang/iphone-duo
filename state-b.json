@@ -1,12 +1,8 @@
 {
  "seen": {},
  "blindAlerted": false,
- "blindSince": 1794784392289,
+ "blindSince": 1794786282029,
  "blindLog": [
-  "2026-11-15T20:59:41.502Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-15T21:00:26.812Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-15T21:01:12.062Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-15T21:26:41.448Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-15T21:27:26.731Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-15T21:28:11.978Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-15T21:54:26.734Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
@@ -22,7 +18,11 @@
   "2026-11-15T23:13:12.289Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-15T23:13:57.312Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
   "2026-11-15T23:14:41.633Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
-  "2026-11-15T23:15:27.113Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974"
+  "2026-11-15T23:15:27.113Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-15T23:44:42.029Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-15T23:45:26.453Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-15T23:46:12.014Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974",
+  "2026-11-15T23:46:56.512Z Orlando: zip 32809: HTTP 541, no JSON. titulo=\"Page Not Found - Apple\" server=Apple content-type=text/html len=127974"
  ],
  "hitLog": [
   "2026-11-14T04:19:56.461Z {\"store\":\"Florida Mall\",\"part\":\"MK1J4LL/A\",\"label\":\"Star White 1TB\",\"pickupDisplay\":\"available\",\"quote\":\"Available Tomorrow\",\"regular\":{\"storeSearchEnabled\":true,\"storePickupLabel\":\"Order now. Pick up in store:\",\"storeSelectionEnabled\":true,\"storePickupQuote\":\"Tomorrow at Apple Florida Mall\",\"storePickupQuote2_0\":\"<span class=\\\"as-pickup-quote-availability-quote\\\">Tomorrow</span> at <button type=\\\"button\\\" class=\\\"rf-pickup-quote-overlay-trigger as-retailavailabilitytrigger-infobutton retail-availability-search-trigger as-buttonlink as-buttonlink-inline\\\" data-ase-overlay=\\\"buac-overlay\\\" data-ase-click=\\\"show\\\">Apple Florida Mall</button>\",\"storePickupLinkText\":\"Check availability\",\"storePickupProductTitle\":\"iPhone Duo 1TB Star White\",\"basePartNumber\":\"MK1J4\"}}",

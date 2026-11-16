@@ -2,6 +2,8 @@ name: monitor-duo-b
 on:
   schedule: [{ cron: '5-59/10 * * * *' }]   # respaldo de la instancia B (desfasada 5 min de A)
   workflow_dispatch:
+env:
+  END_EPOCH: '1795129200'   # jueves 19 nov 2026, 6:00 pm hora de Orlando (23:00 UTC)
 permissions:
   contents: write
   actions: write
@@ -25,9 +27,9 @@ jobs:
           STATE_FILE: state-b.json
         run: |
           # fuera de la ventana (despues del 19 nov en Orlando) no hay nada que revisar: no gastar minutos
-          if [ "$(date -u +%Y%m%d)" -ge 20261121 ]; then echo 'ventana terminada'; exit 0; fi
+          if [ "$(date -u +%s)" -ge "$END_EPOCH" ]; then echo 'ventana terminada'; exit 0; fi
           n=0
-          while [ "$SECONDS" -lt 2700 ]; do
+          while [ "$SECONDS" -lt 2700 ] && [ "$(date -u +%s)" -lt "$END_EPOCH" ]; do
             n=$((n+1))
             node monitor.mjs && rc=0 || rc=$?
             if [ "$rc" -eq 75 ]; then echo "relanzando en otro servidor"; break; fi
@@ -46,9 +48,9 @@ jobs:
               sleep $((RANDOM % 5 + 2))
             done
           fi
-      - name: Relanzar la cadena (hasta el 19 nov)
+      - name: Relanzar la cadena (hasta el jueves 19 nov, 6 pm Orlando)
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "$(date -u +%Y%m%d)" -lt 20261121 ]; then gh workflow run monitor-b.yml --ref main; fi
+          if [ "$(date -u +%s)" -lt "$END_EPOCH" ]; then gh workflow run monitor-b.yml --ref main; fi

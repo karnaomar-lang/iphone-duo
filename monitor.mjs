@@ -13,8 +13,8 @@ const PARTS = {
 };
 
 const WINDOWS = [
-  // Solo Orlando, del 5 al 19 de nov.
-  { name: 'Orlando', zips: ['32809'], stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-19' },
+  // Solo Orlando, del 5 de nov hasta el jueves 19 de nov a las 6:00 pm hora de Orlando (EST).
+  { name: 'Orlando', zips: ['32809'], stores: { R143: 'Florida Mall', R053: 'Millenia', R291: 'Altamonte' }, from: '2026-11-05', to: '2026-11-19', until: '2026-11-19T18:00:00-05:00' },
 ];
 
 // Instancia de respaldo (BACKUP=1): solo avisa cuando encuentra un iPhone; sin aviso diario ni de 'no puedo leer' para no duplicar.
@@ -109,7 +109,7 @@ async function check(win) {
 let anyBlind = null;
 const summary = [];
 for (const win of WINDOWS) {
-  if (today < win.from || today > win.to) { console.log(`${win.name}: fuera de ventana (${win.from}..${win.to})`); summary.push(`${win.name}: aun fuera de su ventana (${win.from} a ${win.to})`); continue; }
+  if (today < win.from || today > win.to || (win.until && Date.now() > Date.parse(win.until))) { console.log(`${win.name}: fuera de ventana (${win.from}..${win.to})`); summary.push(`${win.name}: aun fuera de su ventana (${win.from} a ${win.to})`); continue; }
   const res = await check(win);
   if (res.blind) { anyBlind = `${win.name}: ${res.blind}`; console.log('CIEGO', anyBlind); summary.push(`${win.name}: NO PUDE LEER APPLE`); continue; }
   if (res.hits.length) {

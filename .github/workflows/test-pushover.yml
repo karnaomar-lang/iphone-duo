@@ -8,7 +8,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
-      - run: node test-pushover.mjs
+      - run: node diag-pushover.mjs
         env:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
           PUSHOVER_TOKEN: ${{ secrets.PUSHOVER_TOKEN }}

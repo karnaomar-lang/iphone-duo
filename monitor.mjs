@@ -162,6 +162,22 @@ if (!BACKUP && parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== 
   state.lastHeartbeat = mxDate;
 }
 
+// Aviso previo a la apertura de las tiendas: 20 min antes (lun-sab abren 10:00 am, domingo 11:00 am, hora de Orlando).
+// Horarios de Florida Mall y Millenia segun Apple y el centro comercial; Altamonte no pude confirmarlo (se asume igual). Solo instancia A y dentro de la ventana.
+const openWin = WINDOWS[0];
+if (!BACKUP && !(openWin.until && Date.now() > Date.parse(openWin.until)) && mxDate >= openWin.from && mxDate <= openWin.to) {
+  const dow = new Date(`${mxDate}T12:00:00Z`).getUTCDay(); // 0 = domingo
+  const openMin = (dow === 0 ? 11 : 10) * 60;
+  const nowMin = parseInt(mxTime.slice(0, 2), 10) * 60 + parseInt(mxTime.slice(3, 5), 10);
+  if (nowMin >= openMin - 20 && nowMin < openMin - 5 && state.lastOpenNotice !== mxDate) {
+    const hh = dow === 0 ? '11:00 am' : '10:00 am';
+    const msg = `Las tiendas de Orlando abren a las ${hh} (en unos 20 minutos). Ten Apple abierto y la sesion iniciada, con tarjeta y direccion guardadas.`;
+    await notify('Las tiendas abren pronto - Orlando', msg, 'default');
+    await notifyCritical('Las tiendas abren pronto - Orlando', msg, undefined, 0);
+    state.lastOpenNotice = mxDate;
+  }
+}
+
 writeFileSync(STATE_FILE, JSON.stringify(state, null, 1));
 
 // Si Apple bloquea la IP de este servidor de GitHub, terminar la vuelta para que la cadena se relance en otro servidor (otra IP).

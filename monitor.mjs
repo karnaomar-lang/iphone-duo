@@ -23,6 +23,9 @@ const STATE_FILE = process.env.STATE_FILE || 'state.json';
 const state = existsSync(STATE_FILE) ? JSON.parse(readFileSync(STATE_FILE, 'utf8')) : { seen: {}, blindAlerted: false };
 const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
+// Silencio nocturno: de 11:00 pm a 8:00 am hora de Orlando no se mandan avisos de disponibilidad (se anotan y se resumen en el aviso de las 8 am).
+const isQuiet = () => { const h = parseInt(new Date().toLocaleString('sv-SE', { timeZone: 'America/New_York' }).split(' ')[1].slice(0, 2), 10); return h >= 23 || h < 8; };
+
 async function notify(title, message, priority = 'urgent', click) {
   const headers = { Title: title, Priority: priority, Tags: 'iphone,rotating_light' };
   if (click) headers.Click = click;
@@ -125,7 +128,13 @@ for (const win of WINDOWS) {
   summary.push(`${win.name}: ${res.hits.length} disponibles`);
   const now = Date.now();
   const fresh = res.hits.filter(h => now - (state.seen[h.key] || 0) > 30 * 60 * 1000);
-  if (fresh.length) {
+  if (fresh.length && isQuiet()) {
+    // madrugada: no se avisa ni se marca como visto, para avisar a las 8 am si sigue disponible
+    for (const h of fresh) {
+      console.log('SILENCIO nocturno (sin aviso):', h.text);
+      if (!(state.quietHits || []).some(q => q.key === h.key)) state.quietHits = [...(state.quietHits || []), { key: h.key, text: h.text, at: new Date().toISOString() }].slice(-15);
+    }
+  } else if (fresh.length) {
     await notify(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\n\nCompra YA: sin AppleCare, sin intercambio, recoger en tienda. En el checkout confirma la fecha de recogida.', 'urgent',
       'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
     await notifyCritical(`iPhone Duo DISPONIBLE - ${win.name}`, fresh.map(h => h.text).join('\n') + '\nCompra YA. Confirma la fecha de recogida.', 'https://www.apple.com/shop/buy-iphone/iphone-duo/7.6-inch-display-1tb-night-sky-unlocked');
@@ -154,9 +163,11 @@ if (!BACKUP && anyBlind && !state.blindAlerted && nowMs - state.blindSince >= 3 
 // aviso diario de que el monitor sigue vivo (primer run despues de las 8:00 am hora de Orlando)
 const mx = new Date().toLocaleString('sv-SE', { timeZone: 'America/New_York' }); // hora de Orlando
 const [mxDate, mxTime] = mx.split(' ');
-if (!BACKUP && parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
+if (!BACKUP && !isQuiet() && parseInt(mxTime.slice(0, 2), 10) >= 8 && state.lastHeartbeat !== mxDate) {
   // prioridad normal (antes 'low': en iOS esos avisos llegaban de forma poco fiable) y por los dos canales; Pushover en prioridad normal, sin sirena
-  const hb = summary.join('\n') + '\n(Este aviso llega 1 vez al dia, a las 8:00 am hora de Orlando. Si un dia no llega, el monitor se cayo.)';
+  let hb = summary.join('\n') + '\n(Este aviso llega 1 vez al dia, a las 8:00 am hora de Orlando. Si un dia no llega, el monitor se cayo.)';
+  if ((state.quietHits || []).length) hb += '\nDurante la noche (sin aviso) se vio disponible:\n' + state.quietHits.map(q => `- ${q.text} (${q.at.slice(11, 16)} UTC)`).join('\n');
+  state.quietHits = [];
   await notify('Monitor Duo: sigo vigilando', hb, 'default');
   await notifyCritical('Monitor Duo: sigo vigilando', hb, undefined, 0);
   state.lastHeartbeat = mxDate;
